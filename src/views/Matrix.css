@@ -122,8 +122,8 @@ table.matrix thead th {
 }
 
 .col-head {
-  min-width: 76px;
-  padding: 10px 6px !important;
+  min-width: 58px;
+  padding: 10px 3px !important;
 }
 
 .col-head-btn {
@@ -134,7 +134,7 @@ table.matrix thead th {
   padding: 0;
   font-size: 0.86rem;
   cursor: pointer;
-  max-width: 110px;
+  max-width: 88px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -146,8 +146,9 @@ table.matrix thead th {
 }
 
 .col-sub {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   margin-top: 2px;
+  white-space: nowrap;
 }
 
 .row-workdays {
@@ -189,12 +190,12 @@ table.matrix thead th {
 
 .cell-input {
   width: 100%;
-  min-width: 56px;
+  min-width: 44px;
   border: none;
   border-radius: 0;
   background: transparent;
   text-align: center;
-  padding: 10px 4px 2px;
+  padding: 10px 2px 2px;
 }
 
 .cell-input:focus {
