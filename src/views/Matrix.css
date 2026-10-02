@@ -219,6 +219,16 @@ table.matrix thead th {
   padding-bottom: 0;
 }
 
+.cell-unbooked {
+  font-size: 0.64rem;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.cell-unbooked.over {
+  color: var(--amber);
+}
+
 .cell-action {
   font-size: 0.66rem;
   padding: 1px 7px;

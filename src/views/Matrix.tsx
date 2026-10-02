@@ -167,6 +167,7 @@ export function Matrix({ onOpenProject }: MatrixProps) {
                     project={p}
                     bill={index.get(`${p.id}:${month}`)}
                     billable={isProjectBillable(db, p)}
+                    workDays={businessDays(month)}
                     onCommit={(hours) =>
                       actions.setBillHours(p.id, month, hours)
                     }
@@ -198,12 +199,14 @@ function MatrixCell({
   project,
   bill,
   billable,
+  workDays,
   onCommit,
   onStatus,
 }: {
   project: Project;
   bill?: MonthlyBill;
   billable: boolean;
+  workDays: number;
   onCommit: (hours: number | null) => void;
   onStatus: (billId: string, status: BillStatus) => void;
 }) {
@@ -232,6 +235,13 @@ function MatrixCell({
 
   const missing = billable && stored == null;
   const amount = bill ? billAmount(bill, project) : 0;
+
+  // Days not yet booked = the month's working days minus booked days
+  // (booked days = hours / 8). Rounded to one decimal for readability.
+  const HOURS_PER_DAY = 8;
+  const round1 = (n: number) => Math.round(n * 10) / 10;
+  const bookedDays = stored == null ? 0 : stored / HOURS_PER_DAY;
+  const unbookedDays = round1(workDays - bookedDays);
 
   // Color-code by billing state once hours are present.
   //   estimated = hours entered, not yet invoiced (pending)
@@ -269,6 +279,18 @@ function MatrixCell({
         <div className="cell-foot">
           <span className="cell-amount muted">
             {formatMoney(amount, project.currency)}
+          </span>
+          <span
+            className={
+              "cell-unbooked" + (unbookedDays < 0 ? " over" : "")
+            }
+            title={`${workDays} working days this month · ${round1(
+              bookedDays
+            )} booked`}
+          >
+            {unbookedDays < 0
+              ? `${Math.abs(unbookedDays)} d over`
+              : `${unbookedDays} d unbooked`}
           </span>
           {bill && bill.status === "pending" && (
             <button
