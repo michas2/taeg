@@ -32,6 +32,46 @@
   font-size: 0.8rem;
 }
 
+.header-revenue {
+  display: flex;
+  gap: 18px;
+  padding-left: 20px;
+  margin-left: 4px;
+  border-left: 1px solid var(--border);
+}
+
+.rev-group {
+  display: flex;
+  gap: 16px;
+}
+
+.rev-metric {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.rev-label {
+  font-size: 0.66rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rev-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.rev-value.green {
+  color: var(--green);
+}
+
+.rev-value.amber {
+  color: var(--amber);
+}
+
 .tabs {
   display: flex;
   gap: 4px;
