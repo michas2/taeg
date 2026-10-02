@@ -1,0 +1,163 @@
+.matrix-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  height: 100%;
+}
+
+.matrix-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.matrix-controls {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.matrix-controls .toggle {
+  gap: 8px;
+}
+
+.matrix-scroll {
+  flex: 1;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+table.matrix {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: max-content;
+  min-width: 100%;
+  background: var(--surface);
+}
+
+table.matrix th,
+table.matrix td {
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  padding: 0;
+}
+
+table.matrix th:last-child,
+table.matrix td:last-child {
+  border-right: none;
+}
+
+/* Sticky header row */
+table.matrix thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--surface-2);
+  padding: 10px 12px;
+  text-align: center;
+  vertical-align: bottom;
+}
+
+/* Sticky first column */
+.corner,
+.row-head {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--surface-2);
+  text-align: left !important;
+  white-space: nowrap;
+  padding: 8px 12px !important;
+  min-width: 120px;
+}
+
+.corner {
+  z-index: 3;
+}
+
+.col-head {
+  min-width: 120px;
+}
+
+.col-head-btn {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-weight: 600;
+  padding: 0;
+  font-size: 0.86rem;
+  cursor: pointer;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.col-head-btn:hover {
+  color: var(--accent);
+  background: transparent;
+}
+
+.col-sub {
+  font-size: 0.72rem;
+  margin-top: 2px;
+}
+
+.cell {
+  padding: 0 !important;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.cell-missing {
+  background: color-mix(in srgb, var(--amber) 10%, transparent);
+}
+
+.cell-input {
+  width: 100%;
+  min-width: 90px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  text-align: center;
+  padding: 10px 8px 2px;
+}
+
+.cell-input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  background: var(--bg);
+}
+
+.cell-amount {
+  font-size: 0.68rem;
+  padding-bottom: 5px;
+}
+
+table.matrix tfoot th,
+table.matrix tfoot td {
+  position: sticky;
+  bottom: 0;
+  background: var(--surface-2);
+  font-weight: 600;
+  border-bottom: none;
+}
+
+.total-cell {
+  text-align: center;
+  padding: 10px 8px;
+}
+
+/* Hide number input spinners for a cleaner grid */
+.cell-input::-webkit-outer-spin-button,
+.cell-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.cell-input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}

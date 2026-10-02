@@ -4,11 +4,13 @@ import { KanbanBoard } from "./views/KanbanBoard";
 import { ProjectBilling } from "./views/ProjectBilling";
 import { MissingHours } from "./views/MissingHours";
 import { Revenue } from "./views/Revenue";
+import { Matrix } from "./views/Matrix";
 import "./App.css";
 
 type View =
   | { tab: "board" }
   | { tab: "project"; projectId: string }
+  | { tab: "matrix" }
   | { tab: "missing" }
   | { tab: "revenue" };
 
@@ -34,6 +36,12 @@ function Shell() {
             onClick={() => setView({ tab: "board" })}
           >
             Board
+          </button>
+          <button
+            className={view.tab === "matrix" ? "tab active" : "tab"}
+            onClick={() => setView({ tab: "matrix" })}
+          >
+            Hours matrix
           </button>
           <button
             className={view.tab === "missing" ? "tab active" : "tab"}
@@ -68,6 +76,11 @@ function Shell() {
           <ProjectBilling
             projectId={view.projectId}
             onBack={() => setView({ tab: "board" })}
+          />
+        )}
+        {view.tab === "matrix" && (
+          <Matrix
+            onOpenProject={(projectId) => setView({ tab: "project", projectId })}
           />
         )}
         {view.tab === "missing" && (
