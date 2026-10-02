@@ -54,16 +54,20 @@ export function Matrix({ onOpenProject }: MatrixProps) {
 
   const index = useMemo(() => billIndex(db), [db]);
 
-  // Column (per-project) hours totals across the shown months.
+  // Column (per-project) totals across the shown months: hours + revenue.
   const projectTotals = useMemo(() => {
-    const totals: Record<string, number> = {};
+    const totals: Record<string, { hours: number; revenue: number }> = {};
     for (const p of projects) {
-      let sum = 0;
+      let hours = 0;
+      let revenue = 0;
       for (const m of months) {
         const bill = index.get(`${p.id}:${m}`);
-        if (bill?.hours != null) sum += bill.hours;
+        if (bill?.hours != null) {
+          hours += bill.hours;
+          revenue += billAmount(bill, p);
+        }
       }
-      totals[p.id] = sum;
+      totals[p.id] = { hours, revenue };
     }
     return totals;
   }, [projects, months, index]);
@@ -184,7 +188,15 @@ export function Matrix({ onOpenProject }: MatrixProps) {
               <th className="row-head">Total hours</th>
               {projects.map((p) => (
                 <td key={p.id} className="total-cell mono">
-                  {projectTotals[p.id] || 0}
+                  {projectTotals[p.id]?.hours || 0}
+                </td>
+              ))}
+            </tr>
+            <tr>
+              <th className="row-head">Total revenue</th>
+              {projects.map((p) => (
+                <td key={p.id} className="total-cell mono">
+                  {formatMoney(projectTotals[p.id]?.revenue || 0, p.currency)}
                 </td>
               ))}
             </tr>
