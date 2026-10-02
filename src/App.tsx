@@ -2,6 +2,8 @@ import { useState } from "react";
 import { StoreProvider, useStore } from "./store/store";
 import { KanbanBoard } from "./views/KanbanBoard";
 import { ProjectBilling } from "./views/ProjectBilling";
+import { MissingHours } from "./views/MissingHours";
+import { Revenue } from "./views/Revenue";
 import "./App.css";
 
 type View =
@@ -69,31 +71,16 @@ function Shell() {
           />
         )}
         {view.tab === "missing" && (
-          <Placeholder label="Missing-hours overview — coming next." />
+          <MissingHours
+            onOpenProject={(projectId) => setView({ tab: "project", projectId })}
+          />
         )}
         {view.tab === "revenue" && (
-          <Placeholder label="Revenue overview — coming next." />
+          <Revenue
+            onOpenProject={(projectId) => setView({ tab: "project", projectId })}
+          />
         )}
       </main>
-    </div>
-  );
-}
-
-function Placeholder({
-  label,
-  onBack,
-}: {
-  label: string;
-  onBack?: () => void;
-}) {
-  return (
-    <div className="placeholder">
-      {onBack && (
-        <button className="ghost" onClick={onBack}>
-          ← Back to board
-        </button>
-      )}
-      <p className="muted">{label}</p>
     </div>
   );
 }
