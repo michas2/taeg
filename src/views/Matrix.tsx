@@ -185,18 +185,15 @@ export function Matrix({ onOpenProject }: MatrixProps) {
           </tbody>
           <tfoot>
             <tr>
-              <th className="row-head">Total hours</th>
+              <th className="row-head">Total</th>
               {projects.map((p) => (
                 <td key={p.id} className="total-cell mono">
-                  {projectTotals[p.id]?.hours || 0}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <th className="row-head">Total revenue</th>
-              {projects.map((p) => (
-                <td key={p.id} className="total-cell mono">
-                  {formatMoney(projectTotals[p.id]?.revenue || 0, p.currency)}
+                  <div className="total-hours">
+                    {projectTotals[p.id]?.hours || 0} h
+                  </div>
+                  <div className="total-revenue">
+                    {formatMoney(projectTotals[p.id]?.revenue || 0, p.currency)}
+                  </div>
                 </td>
               ))}
             </tr>
