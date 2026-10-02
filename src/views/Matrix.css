@@ -279,6 +279,29 @@ table.matrix tfoot td {
   font-weight: 600;
 }
 
+/* Trailing per-month total column, sticky to the right edge. */
+.col-total-head,
+.month-total {
+  position: sticky;
+  right: 0;
+  z-index: 1;
+  background: var(--surface-2);
+  border-left: 2px solid var(--border);
+  min-width: 110px;
+}
+
+.col-total-head {
+  z-index: 3;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Bottom-right corner: pinned both directions. */
+.grand-total {
+  z-index: 4;
+  border-top: 2px solid var(--border);
+}
+
 /* Hide number input spinners for a cleaner grid */
 .cell-input::-webkit-outer-spin-button,
 .cell-input::-webkit-inner-spin-button {

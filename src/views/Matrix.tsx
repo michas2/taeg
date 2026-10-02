@@ -26,6 +26,19 @@ function billIndex(db: Database): Map<string, MonthlyBill> {
   return map;
 }
 
+/**
+ * Format a revenue-by-currency map into one or more amount strings.
+ * Returns "—" when there is nothing. Multiple currencies are shown on
+ * separate lines (projects may bill in different currencies).
+ */
+function formatRevenueByCurrency(
+  byCurrency: Record<string, number>
+): string[] {
+  const entries = Object.entries(byCurrency).filter(([, amt]) => amt !== 0);
+  if (entries.length === 0) return ["—"];
+  return entries.map(([cur, amt]) => formatMoney(amt, cur));
+}
+
 export function Matrix({ onOpenProject }: MatrixProps) {
   const { db } = useStore();
   const actions = useActions();
@@ -71,6 +84,44 @@ export function Matrix({ onOpenProject }: MatrixProps) {
     }
     return totals;
   }, [projects, months, index]);
+
+  // Row (per-month) totals across all shown projects. Revenue is grouped by
+  // currency, since projects may bill in different currencies.
+  const monthTotals = useMemo(() => {
+    const byMonth: Record<
+      string,
+      { hours: number; revenueByCurrency: Record<string, number> }
+    > = {};
+    for (const m of months) {
+      let hours = 0;
+      const revenueByCurrency: Record<string, number> = {};
+      for (const p of projects) {
+        const bill = index.get(`${p.id}:${m}`);
+        if (bill?.hours != null) {
+          hours += bill.hours;
+          revenueByCurrency[p.currency] =
+            (revenueByCurrency[p.currency] ?? 0) + billAmount(bill, p);
+        }
+      }
+      byMonth[m] = { hours, revenueByCurrency };
+    }
+    return byMonth;
+  }, [projects, months, index]);
+
+  // Grand total across all shown months and projects.
+  const grandTotal = useMemo(() => {
+    let hours = 0;
+    const revenueByCurrency: Record<string, number> = {};
+    for (const m of months) {
+      const mt = monthTotals[m];
+      if (!mt) continue;
+      hours += mt.hours;
+      for (const [cur, amt] of Object.entries(mt.revenueByCurrency)) {
+        revenueByCurrency[cur] = (revenueByCurrency[cur] ?? 0) + amt;
+      }
+    }
+    return { hours, revenueByCurrency };
+  }, [months, monthTotals]);
 
   if (projects.length === 0) {
     return (
@@ -153,6 +204,7 @@ export function Matrix({ onOpenProject }: MatrixProps) {
                   </div>
                 </th>
               ))}
+              <th className="col-head col-total-head">Total</th>
             </tr>
           </thead>
           <tbody>
@@ -180,6 +232,18 @@ export function Matrix({ onOpenProject }: MatrixProps) {
                     }
                   />
                 ))}
+                <td className="total-cell month-total mono">
+                  <div className="total-hours">
+                    {monthTotals[month]?.hours || 0} h
+                  </div>
+                  {formatRevenueByCurrency(
+                    monthTotals[month]?.revenueByCurrency ?? {}
+                  ).map((line, i) => (
+                    <div className="total-revenue" key={i}>
+                      {line}
+                    </div>
+                  ))}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -196,6 +260,16 @@ export function Matrix({ onOpenProject }: MatrixProps) {
                   </div>
                 </td>
               ))}
+              <td className="total-cell month-total grand-total mono">
+                <div className="total-hours">{grandTotal.hours || 0} h</div>
+                {formatRevenueByCurrency(grandTotal.revenueByCurrency).map(
+                  (line, i) => (
+                    <div className="total-revenue" key={i}>
+                      {line}
+                    </div>
+                  )
+                )}
+              </td>
             </tr>
           </tfoot>
         </table>
