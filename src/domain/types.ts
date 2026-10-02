@@ -46,7 +46,10 @@ export interface Stage extends Entity {
 /** A client project / engagement. */
 export interface Project extends Entity {
   name: string;
-  client?: string;
+  /** The company you actually work for / do the work at. */
+  customer?: string;
+  /** The agency/intermediary you send the invoice to (may equal the customer). */
+  recruiter?: string;
   stageId: Id;
   /** Per-project hourly rate. */
   hourlyRate: number;
@@ -94,4 +97,4 @@ export interface Database {
   bills: Record<Id, MonthlyBill>;
 }
 
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;

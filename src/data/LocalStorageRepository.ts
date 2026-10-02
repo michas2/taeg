@@ -1,4 +1,4 @@
-import type { Database } from "../domain/types";
+import type { Database, Project } from "../domain/types";
 import { SCHEMA_VERSION } from "../domain/types";
 import type { Repository } from "./Repository";
 
@@ -38,10 +38,25 @@ export class LocalStorageRepository implements Repository {
 
 /**
  * Forward-migrate a loaded database to the current schema version.
- * No migrations needed yet; this is the hook for future schema changes.
+ * Each step upgrades one version so older stored data keeps working.
  */
 function migrate(db: Database): Database {
-  if (db.schemaVersion === SCHEMA_VERSION) return db;
-  // Future: step through versions here.
-  return { ...db, schemaVersion: SCHEMA_VERSION };
+  let current = db;
+
+  // v1 -> v2: the single `client` field was split into `customer` + `recruiter`.
+  // Carry the old value over to `customer` (who the work was done for).
+  if ((current.schemaVersion ?? 1) < 2) {
+    const projects: Database["projects"] = {};
+    for (const [id, p] of Object.entries(current.projects)) {
+      const legacy = p as Project & { client?: string };
+      const { client, ...rest } = legacy;
+      projects[id] = {
+        ...rest,
+        customer: rest.customer ?? client,
+      };
+    }
+    current = { ...current, projects, schemaVersion: 2 };
+  }
+
+  return { ...current, schemaVersion: SCHEMA_VERSION };
 }

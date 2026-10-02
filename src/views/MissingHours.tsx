@@ -76,8 +76,13 @@ export function MissingHours({ onOpenProject }: MissingHoursProps) {
                 <div className="missing-row" key={entry.project.id + month}>
                   <div>
                     <div className="missing-name">{entry.project.name}</div>
-                    {entry.project.client && (
-                      <div className="muted">{entry.project.client}</div>
+                    {(entry.project.customer || entry.project.recruiter) && (
+                      <div className="muted">
+                        {entry.project.customer ?? entry.project.recruiter}
+                        {entry.project.recruiter &&
+                          entry.project.recruiter !== entry.project.customer &&
+                          ` · invoice to ${entry.project.recruiter}`}
+                      </div>
                     )}
                   </div>
                   <button

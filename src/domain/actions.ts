@@ -89,7 +89,8 @@ export function addProject(
     stageId: string;
     hourlyRate: number;
     currency: string;
-    client?: string;
+    customer?: string;
+    recruiter?: string;
     notes?: string;
   }
 ): Database {
@@ -102,7 +103,8 @@ export function addProject(
     createdAt: ts,
     updatedAt: ts,
     name: input.name,
-    client: input.client,
+    customer: input.customer,
+    recruiter: input.recruiter,
     stageId: input.stageId,
     hourlyRate: input.hourlyRate,
     currency: input.currency,

@@ -101,9 +101,15 @@ export function KanbanBoard({ onOpenProject }: KanbanBoardProps) {
                       onClick={() => onOpenProject(project.id)}
                     >
                       <div className="card-title">{project.name}</div>
-                      {project.client && (
-                        <div className="card-client">{project.client}</div>
+                      {project.customer && (
+                        <div className="card-client">{project.customer}</div>
                       )}
+                      {project.recruiter &&
+                        project.recruiter !== project.customer && (
+                          <div className="card-client muted">
+                            via {project.recruiter}
+                          </div>
+                        )}
                       <div className="card-meta">
                         <span>
                           {formatMoney(project.hourlyRate, project.currency)}/h

@@ -78,10 +78,14 @@ export function ProjectBilling({ projectId, onBack }: ProjectBillingProps) {
         <div>
           <h2>{project.name}</h2>
           <div className="muted">
-            {project.client ? project.client + " · " : ""}
-            {stage?.name}
+            {[project.customer, stage?.name].filter(Boolean).join(" · ")}
             {!billable && " · not billable in this stage"}
           </div>
+          {project.recruiter && (
+            <div className="muted" style={{ fontSize: "0.82rem" }}>
+              Invoice to: {project.recruiter}
+            </div>
+          )}
         </div>
         <div className="rate-edit">
           <label htmlFor="rate">Hourly rate</label>

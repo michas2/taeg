@@ -9,7 +9,8 @@ interface ProjectFormProps {
   onClose: () => void;
   onSubmit: (input: {
     name: string;
-    client?: string;
+    customer?: string;
+    recruiter?: string;
     stageId: string;
     hourlyRate: number;
     currency: string;
@@ -25,7 +26,8 @@ export function ProjectForm({
   onSubmit,
 }: ProjectFormProps) {
   const [name, setName] = useState(project?.name ?? "");
-  const [client, setClient] = useState(project?.client ?? "");
+  const [customer, setCustomer] = useState(project?.customer ?? "");
+  const [recruiter, setRecruiter] = useState(project?.recruiter ?? "");
   const [stageId, setStageId] = useState(project?.stageId ?? initialStageId);
   const [hourlyRate, setHourlyRate] = useState(
     project ? String(project.hourlyRate) : "100"
@@ -39,7 +41,8 @@ export function ProjectForm({
     if (!canSave) return;
     onSubmit({
       name: name.trim(),
-      client: client.trim() || undefined,
+      customer: customer.trim() || undefined,
+      recruiter: recruiter.trim() || undefined,
       stageId,
       hourlyRate: Number(hourlyRate),
       currency: currency.trim().toUpperCase() || "EUR",
@@ -73,14 +76,25 @@ export function ProjectForm({
           placeholder="e.g. Acme Platform Rebuild"
         />
       </div>
-      <div>
-        <label htmlFor="pf-client">Client</label>
-        <input
-          id="pf-client"
-          value={client}
-          onChange={(e) => setClient(e.target.value)}
-          placeholder="e.g. Acme Corp"
-        />
+      <div className="field-row">
+        <div>
+          <label htmlFor="pf-customer">Customer</label>
+          <input
+            id="pf-customer"
+            value={customer}
+            onChange={(e) => setCustomer(e.target.value)}
+            placeholder="who you work for"
+          />
+        </div>
+        <div>
+          <label htmlFor="pf-recruiter">Recruiter</label>
+          <input
+            id="pf-recruiter"
+            value={recruiter}
+            onChange={(e) => setRecruiter(e.target.value)}
+            placeholder="who you invoice"
+          />
+        </div>
       </div>
       <div>
         <label htmlFor="pf-stage">Stage</label>

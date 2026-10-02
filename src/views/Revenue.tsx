@@ -110,8 +110,13 @@ export function Revenue({ onOpenProject }: RevenueProps) {
               >
                 <td>
                   <div className="missing-name">{r.project.name}</div>
-                  {r.project.client && (
-                    <div className="muted">{r.project.client}</div>
+                  {(r.project.customer || r.project.recruiter) && (
+                    <div className="muted">
+                      {r.project.customer ?? r.project.recruiter}
+                      {r.project.recruiter &&
+                        r.project.recruiter !== r.project.customer &&
+                        ` · via ${r.project.recruiter}`}
+                    </div>
                   )}
                 </td>
                 <td className="mono">{formatMoney(r.billed, r.currency)}</td>

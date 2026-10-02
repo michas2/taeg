@@ -48,7 +48,8 @@ export function createSeedDatabase(): Database {
   // Sample active project with a short billing history.
   const acme = stamp({
     name: "Acme Platform Rebuild",
-    client: "Acme Corp",
+    customer: "Acme Corp",
+    recruiter: "TechStaff Agency",
     stageId: stageByName("Active").id,
     hourlyRate: 95,
     currency: "EUR",
@@ -59,7 +60,8 @@ export function createSeedDatabase(): Database {
 
   const globex = stamp({
     name: "Globex Mobile App",
-    client: "Globex",
+    customer: "Globex",
+    recruiter: "Globex",
     stageId: stageByName("Talked to customer").id,
     hourlyRate: 110,
     currency: "EUR",
