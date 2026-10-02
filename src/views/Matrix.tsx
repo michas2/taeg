@@ -27,7 +27,7 @@ function billIndex(db: Database): Map<string, MonthlyBill> {
 export function Matrix({ onOpenProject }: MatrixProps) {
   const { db } = useStore();
   const actions = useActions();
-  const [monthsBack, setMonthsBack] = useState(6);
+  const [monthsBack, setMonthsBack] = useState(12);
   const [onlyBillable, setOnlyBillable] = useState(true);
 
   // Columns: projects (billable first), optionally filtered to billable only.
