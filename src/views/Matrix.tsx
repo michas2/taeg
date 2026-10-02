@@ -87,7 +87,20 @@ export function Matrix({ onOpenProject }: MatrixProps) {
   return (
     <div className="matrix-wrap">
       <div className="matrix-toolbar">
-        <div className="muted">Hours per month × project — edit any cell.</div>
+        <div className="matrix-legend">
+          <span className="legend-item">
+            <span className="legend-swatch sw-estimated" /> estimated
+          </span>
+          <span className="legend-item">
+            <span className="legend-swatch sw-invoiced" /> invoiced
+          </span>
+          <span className="legend-item">
+            <span className="legend-swatch sw-paid" /> paid
+          </span>
+          <span className="legend-item">
+            <span className="legend-swatch sw-missing" /> missing
+          </span>
+        </div>
         <div className="matrix-controls">
           <label className="toggle">
             <input
@@ -210,8 +223,24 @@ function MatrixCell({
   const missing = billable && stored == null;
   const amount = bill ? billAmount(bill, project) : 0;
 
+  // Color-code by billing state once hours are present.
+  //   estimated = hours entered, not yet invoiced (pending)
+  //   invoiced  = invoice sent, not yet paid       (sent)
+  //   paid      = payment received                 (received)
+  let stateClass = "";
+  if (missing) {
+    stateClass = " cell-missing";
+  } else if (stored != null && bill) {
+    stateClass =
+      bill.status === "received"
+        ? " cell-paid"
+        : bill.status === "sent"
+          ? " cell-invoiced"
+          : " cell-estimated";
+  }
+
   return (
-    <td className={"cell" + (missing ? " cell-missing" : "")}>
+    <td className={"cell" + stateClass}>
       <input
         className="cell-input mono"
         type="number"

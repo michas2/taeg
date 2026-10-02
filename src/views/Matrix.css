@@ -19,6 +19,49 @@
   align-items: center;
 }
 
+.matrix-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+}
+
+.sw-estimated {
+  background: color-mix(in srgb, var(--amber) 40%, var(--surface));
+  border-color: var(--amber);
+}
+.sw-invoiced {
+  background: color-mix(in srgb, var(--blue) 40%, var(--surface));
+  border-color: var(--blue);
+}
+.sw-paid {
+  background: color-mix(in srgb, var(--green) 40%, var(--surface));
+  border-color: var(--green);
+}
+.sw-missing {
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 2px,
+    color-mix(in srgb, var(--text-dim) 40%, transparent) 2px,
+    color-mix(in srgb, var(--text-dim) 40%, transparent) 4px
+  );
+}
+
 .matrix-controls .toggle {
   gap: 8px;
 }
@@ -113,7 +156,27 @@ table.matrix thead th {
 }
 
 .cell-missing {
-  background: color-mix(in srgb, var(--amber) 10%, transparent);
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 5px,
+    color-mix(in srgb, var(--text-dim) 14%, transparent) 5px,
+    color-mix(in srgb, var(--text-dim) 14%, transparent) 10px
+  );
+}
+
+/* Color-coded billing states. A left bar + subtle tint keeps text legible. */
+.cell-estimated {
+  background: color-mix(in srgb, var(--amber) 14%, transparent);
+  box-shadow: inset 3px 0 0 var(--amber);
+}
+.cell-invoiced {
+  background: color-mix(in srgb, var(--blue) 16%, transparent);
+  box-shadow: inset 3px 0 0 var(--blue);
+}
+.cell-paid {
+  background: color-mix(in srgb, var(--green) 16%, transparent);
+  box-shadow: inset 3px 0 0 var(--green);
 }
 
 .cell-input {
