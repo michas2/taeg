@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { StoreProvider, useStore } from "./store/store";
 import { KanbanBoard } from "./views/KanbanBoard";
+import { ProjectBilling } from "./views/ProjectBilling";
 import "./App.css";
 
 type View =
@@ -62,8 +63,8 @@ function Shell() {
           />
         )}
         {view.tab === "project" && (
-          <Placeholder
-            label="Project billing view — coming in the next step."
+          <ProjectBilling
+            projectId={view.projectId}
             onBack={() => setView({ tab: "board" })}
           />
         )}

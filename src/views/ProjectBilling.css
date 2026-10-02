@@ -1,0 +1,132 @@
+.billing {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 900px;
+  margin: 0 auto;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.billing-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.billing-head h2 {
+  font-size: 1.3rem;
+}
+
+.rate-edit {
+  min-width: 160px;
+}
+
+.rate-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rate-row input {
+  width: 100px;
+}
+
+.totals {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.summary-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+
+.summary-label {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+
+.summary-value {
+  font-size: 1.3rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.summary-value.green {
+  color: var(--green);
+}
+.summary-value.amber {
+  color: var(--amber);
+}
+
+.add-month {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.add-month input {
+  width: auto;
+}
+
+table.bills {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+table.bills th,
+table.bills td {
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+table.bills th {
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-dim);
+  background: var(--surface-2);
+}
+
+table.bills tr:last-child td {
+  border-bottom: none;
+}
+
+.row-missing {
+  background: color-mix(in srgb, var(--amber) 8%, transparent);
+}
+
+.hours-input {
+  width: 90px;
+}
+
+.mono {
+  font-variant-numeric: tabular-nums;
+}
+
+.row-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.row-actions button {
+  font-size: 0.78rem;
+  padding: 4px 9px;
+}
+
+td.empty {
+  text-align: center;
+  padding: 24px;
+}
