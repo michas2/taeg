@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useStore, useActions } from "../store/store";
 import { isProjectBillable, billAmount } from "../domain/selectors";
-import type { Database, MonthlyBill, Project } from "../domain/types";
+import type { Database, MonthlyBill, Project, BillStatus } from "../domain/types";
 import {
   currentMonthKey,
   addMonths,
@@ -170,6 +170,9 @@ export function Matrix({ onOpenProject }: MatrixProps) {
                     onCommit={(hours) =>
                       actions.setBillHours(p.id, month, hours)
                     }
+                    onStatus={(billId, status) =>
+                      actions.setBillStatus(billId, status)
+                    }
                   />
                 ))}
               </tr>
@@ -196,11 +199,13 @@ function MatrixCell({
   bill,
   billable,
   onCommit,
+  onStatus,
 }: {
   project: Project;
   bill?: MonthlyBill;
   billable: boolean;
   onCommit: (hours: number | null) => void;
+  onStatus: (billId: string, status: BillStatus) => void;
 }) {
   const stored = bill?.hours ?? null;
   const [draft, setDraft] = useState(stored == null ? "" : String(stored));
@@ -261,8 +266,31 @@ function MatrixCell({
         }}
       />
       {stored != null && amount > 0 && (
-        <div className="cell-amount muted">
-          {formatMoney(amount, project.currency)}
+        <div className="cell-foot">
+          <span className="cell-amount muted">
+            {formatMoney(amount, project.currency)}
+          </span>
+          {bill && bill.status === "pending" && (
+            <button
+              className="cell-action"
+              title="Mark invoice sent"
+              onClick={() => onStatus(bill.id, "sent")}
+            >
+              Invoice
+            </button>
+          )}
+          {bill && bill.status === "sent" && (
+            <button
+              className="cell-action"
+              title="Mark as paid"
+              onClick={() => onStatus(bill.id, "received")}
+            >
+              Mark paid
+            </button>
+          )}
+          {bill && bill.status === "received" && (
+            <span className="cell-paid-tag">Paid ✓</span>
+          )}
         </div>
       )}
     </td>

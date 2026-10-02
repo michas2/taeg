@@ -207,6 +207,43 @@ table.matrix thead th {
   padding-bottom: 5px;
 }
 
+.cell-foot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 0 4px 5px;
+}
+
+.cell-foot .cell-amount {
+  padding-bottom: 0;
+}
+
+.cell-action {
+  font-size: 0.66rem;
+  padding: 1px 7px;
+  border-radius: 999px;
+  line-height: 1.5;
+  opacity: 0.5;
+  transition: opacity 0.12s, background 0.12s, border-color 0.12s;
+}
+
+.cell:hover .cell-action {
+  opacity: 1;
+}
+
+.cell-action:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+.cell-paid-tag {
+  font-size: 0.64rem;
+  color: var(--green);
+  font-weight: 600;
+}
+
 table.matrix tfoot th,
 table.matrix tfoot td {
   position: sticky;
