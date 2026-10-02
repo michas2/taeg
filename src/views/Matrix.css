@@ -149,6 +149,13 @@ table.matrix thead th {
   margin-top: 2px;
 }
 
+.row-workdays {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  margin-top: 3px;
+  font-variant-numeric: tabular-nums;
+}
+
 .cell {
   padding: 0 !important;
   text-align: center;

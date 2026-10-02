@@ -8,6 +8,8 @@ import {
   monthRange,
   monthLabel,
   formatMoney,
+  businessDays,
+  businessHours,
 } from "../utils/helpers";
 import "./Matrix.css";
 
@@ -155,6 +157,9 @@ export function Matrix({ onOpenProject }: MatrixProps) {
                 <th className="row-head">
                   <div>{monthLabel(month)}</div>
                   <div className="muted mono">{month}</div>
+                  <div className="row-workdays" title="Working days (Mon–Fri) and hours at 8h/day">
+                    {businessDays(month)} d · {businessHours(month)} h
+                  </div>
                 </th>
                 {projects.map((p) => (
                   <MatrixCell

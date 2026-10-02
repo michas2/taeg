@@ -56,6 +56,23 @@ export function monthRange(start: MonthKey, end: MonthKey): MonthKey[] {
   return out;
 }
 
+/** Number of working days (Mon–Fri) in a given month. */
+export function businessDays(month: MonthKey): number {
+  const [y, m] = month.split("-").map(Number);
+  const daysInMonth = new Date(y, m, 0).getDate();
+  let count = 0;
+  for (let d = 1; d <= daysInMonth; d++) {
+    const weekday = new Date(y, m - 1, d).getDay(); // 0 = Sun, 6 = Sat
+    if (weekday !== 0 && weekday !== 6) count++;
+  }
+  return count;
+}
+
+/** Working hours in a month, assuming an 8-hour working day. */
+export function businessHours(month: MonthKey, hoursPerDay = 8): number {
+  return businessDays(month) * hoursPerDay;
+}
+
 export function formatMoney(amount: number, currency: string): string {
   try {
     return new Intl.NumberFormat(undefined, {
