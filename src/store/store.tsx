@@ -20,6 +20,8 @@ interface StoreContextValue {
   loading: boolean;
   /** Apply a pure updater; state + persistence happen automatically. */
   apply: (updater: Updater) => void;
+  /** Replace the entire database (e.g. restoring a backup). */
+  replace: (db: Database) => Promise<void>;
   /** Wipe storage and reseed. */
   reset: () => Promise<void>;
 }
@@ -74,14 +76,20 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setDb(seeded);
   }, []);
 
+  const replace = useCallback(async (next: Database) => {
+    await repository.save(next);
+    setDb(next);
+  }, []);
+
   const value = useMemo<StoreContextValue>(
     () => ({
       db: db ?? EMPTY_DB,
       loading,
       apply,
+      replace,
       reset,
     }),
-    [db, loading, apply, reset]
+    [db, loading, apply, replace, reset]
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

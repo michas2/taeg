@@ -39,8 +39,9 @@ export class LocalStorageRepository implements Repository {
 /**
  * Forward-migrate a loaded database to the current schema version.
  * Each step upgrades one version so older stored data keeps working.
+ * Exported so restored backups go through the same upgrade path.
  */
-function migrate(db: Database): Database {
+export function migrate(db: Database): Database {
   let current = db;
 
   // v1 -> v2: the single `client` field was split into `customer` + `recruiter`.

@@ -1,7 +1,13 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { StoreProvider, useStore } from "./store/store";
 import { revenueTotals } from "./domain/selectors";
 import { formatMoney } from "./utils/helpers";
+import {
+  exportDatabase,
+  parseBackup,
+  readFileText,
+  InvalidBackupError,
+} from "./utils/backup";
 import { KanbanBoard } from "./views/KanbanBoard";
 import { ProjectBilling } from "./views/ProjectBilling";
 import { MissingHours } from "./views/MissingHours";
@@ -17,12 +23,37 @@ type View =
   | { tab: "revenue" };
 
 function Shell() {
-  const { db, loading, reset } = useStore();
+  const { db, loading, reset, replace } = useStore();
   const [view, setView] = useState<View>({ tab: "board" });
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // All-time totals for the header, grouped by currency (rates can differ).
   const totals = useMemo(() => revenueTotals(db), [db]);
   const currencies = Object.keys(totals.byCurrency);
+
+  async function handleImportFile(file: File) {
+    try {
+      const text = await readFileText(file);
+      const restored = parseBackup(text);
+      const counts = `${Object.keys(restored.projects).length} projects, ${
+        Object.keys(restored.bills).length
+      } bills`;
+      if (
+        confirm(
+          `Restore this backup (${counts})?\n\nThis replaces all current data.`
+        )
+      ) {
+        await replace(restored);
+        setView({ tab: "board" });
+      }
+    } catch (err) {
+      const msg =
+        err instanceof InvalidBackupError
+          ? err.message
+          : "Could not read the file.";
+      alert(`Import failed: ${msg}`);
+    }
+  }
 
   if (loading) {
     return <div className="loading">Loading…</div>;
@@ -98,14 +129,43 @@ function Shell() {
             Revenue
           </button>
         </nav>
-        <button
-          className="ghost"
-          onClick={() => {
-            if (confirm("Reset all data back to the seed sample?")) void reset();
-          }}
-        >
-          Reset data
-        </button>
+        <div className="header-actions">
+          <button
+            className="ghost"
+            title="Download a JSON backup of all data"
+            onClick={() => exportDatabase(db)}
+          >
+            Export
+          </button>
+          <button
+            className="ghost"
+            title="Restore data from a JSON backup"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            Import
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="application/json,.json"
+            style={{ display: "none" }}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) void handleImportFile(file);
+              // Reset so selecting the same file again re-triggers change.
+              e.target.value = "";
+            }}
+          />
+          <button
+            className="ghost"
+            onClick={() => {
+              if (confirm("Reset all data back to the seed sample?"))
+                void reset();
+            }}
+          >
+            Reset data
+          </button>
+        </div>
       </header>
 
       <main className="app-main">
