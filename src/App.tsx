@@ -1,122 +1,106 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useState } from "react";
+import { StoreProvider, useStore } from "./store/store";
+import { KanbanBoard } from "./views/KanbanBoard";
+import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+type View =
+  | { tab: "board" }
+  | { tab: "project"; projectId: string }
+  | { tab: "missing" }
+  | { tab: "revenue" };
+
+function Shell() {
+  const { loading, reset } = useStore();
+  const [view, setView] = useState<View>({ tab: "board" });
+
+  if (loading) {
+    return <div className="loading">Loading…</div>;
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="app">
+      <header className="app-header">
+        <div className="brand">
+          <span className="brand-mark">◧</span>
+          <strong>taeg</strong>
+          <span className="muted">project &amp; billing manager</span>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
+        <nav className="tabs">
+          <button
+            className={view.tab === "board" ? "tab active" : "tab"}
+            onClick={() => setView({ tab: "board" })}
+          >
+            Board
+          </button>
+          <button
+            className={view.tab === "missing" ? "tab active" : "tab"}
+            onClick={() => setView({ tab: "missing" })}
+          >
+            Missing hours
+          </button>
+          <button
+            className={view.tab === "revenue" ? "tab active" : "tab"}
+            onClick={() => setView({ tab: "revenue" })}
+          >
+            Revenue
+          </button>
+        </nav>
         <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
+          className="ghost"
+          onClick={() => {
+            if (confirm("Reset all data back to the seed sample?")) void reset();
+          }}
         >
-          Count is {count}
+          Reset data
         </button>
-      </section>
+      </header>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      <main className="app-main">
+        {view.tab === "board" && (
+          <KanbanBoard
+            onOpenProject={(projectId) => setView({ tab: "project", projectId })}
+          />
+        )}
+        {view.tab === "project" && (
+          <Placeholder
+            label="Project billing view — coming in the next step."
+            onBack={() => setView({ tab: "board" })}
+          />
+        )}
+        {view.tab === "missing" && (
+          <Placeholder label="Missing-hours overview — coming next." />
+        )}
+        {view.tab === "revenue" && (
+          <Placeholder label="Revenue overview — coming next." />
+        )}
+      </main>
+    </div>
+  );
 }
 
-export default App
+function Placeholder({
+  label,
+  onBack,
+}: {
+  label: string;
+  onBack?: () => void;
+}) {
+  return (
+    <div className="placeholder">
+      {onBack && (
+        <button className="ghost" onClick={onBack}>
+          ← Back to board
+        </button>
+      )}
+      <p className="muted">{label}</p>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <StoreProvider>
+      <Shell />
+    </StoreProvider>
+  );
+}

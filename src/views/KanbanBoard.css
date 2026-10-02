@@ -1,0 +1,137 @@
+.board-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  height: 100%;
+}
+
+.board-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.board {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.column {
+  flex: 0 0 272px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.column.drag-over {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+}
+
+.column-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.column-head h3 {
+  font-size: 0.92rem;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.column-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+.column-count {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  background: var(--surface-2);
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+
+.column-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  overflow-y: auto;
+}
+
+.card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 12px;
+  cursor: grab;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.card:hover {
+  border-color: var(--accent);
+}
+
+.card.dragging {
+  opacity: 0.5;
+}
+
+.card-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.card-client {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.card-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.78rem;
+  margin-top: 2px;
+}
+
+.card-actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.card-actions button {
+  font-size: 0.76rem;
+  padding: 3px 7px;
+}
+
+.add-card {
+  text-align: left;
+  color: var(--text-dim);
+  border: 1px dashed var(--border);
+}
+
+.add-card:hover {
+  color: var(--text);
+  border-color: var(--accent);
+  background: transparent;
+}
