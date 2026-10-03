@@ -56,6 +56,12 @@ export function monthRange(start: MonthKey, end: MonthKey): MonthKey[] {
   return out;
 }
 
+/**
+ * Assumed length of a working day, in hours. Single source of truth for all
+ * hours↔days conversions (working-hours estimate, unbooked-days math).
+ */
+export const HOURS_PER_DAY = 8;
+
 /** Number of working days (Mon–Fri) in a given month. */
 export function businessDays(month: MonthKey): number {
   const [y, m] = month.split("-").map(Number);
@@ -68,8 +74,11 @@ export function businessDays(month: MonthKey): number {
   return count;
 }
 
-/** Working hours in a month, assuming an 8-hour working day. */
-export function businessHours(month: MonthKey, hoursPerDay = 8): number {
+/** Working hours in a month, assuming a standard working day. */
+export function businessHours(
+  month: MonthKey,
+  hoursPerDay = HOURS_PER_DAY
+): number {
   return businessDays(month) * hoursPerDay;
 }
 

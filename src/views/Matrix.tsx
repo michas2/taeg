@@ -10,6 +10,7 @@ import {
   formatMoney,
   businessDays,
   businessHours,
+  HOURS_PER_DAY,
 } from "../utils/helpers";
 import "./Matrix.css";
 
@@ -320,8 +321,7 @@ function MatrixCell({
   const amount = bill ? billAmount(bill, project) : 0;
 
   // Days not yet booked = the month's working days minus booked days
-  // (booked days = hours / 8). Rounded to one decimal for readability.
-  const HOURS_PER_DAY = 8;
+  // (booked days = hours / HOURS_PER_DAY). Rounded to one decimal.
   const round1 = (n: number) => Math.round(n * 10) / 10;
   const bookedDays = stored == null ? 0 : stored / HOURS_PER_DAY;
   const unbookedDays = round1(workDays - bookedDays);
