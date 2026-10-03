@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useStore, useActions } from "../store/store";
+import { useHoursInput } from "../components/useHoursInput";
 import {
   isProjectBillable,
   billAmount,
@@ -255,27 +256,7 @@ function MatrixCell({
   onStatus: (billId: string, status: BillStatus) => void;
 }) {
   const stored = bill?.hours ?? null;
-  const [draft, setDraft] = useState(stored == null ? "" : String(stored));
-
-  // Keep the input in sync if the underlying value changes elsewhere.
-  const storedKey = stored == null ? "" : String(stored);
-  const [lastStored, setLastStored] = useState(storedKey);
-  if (storedKey !== lastStored) {
-    setLastStored(storedKey);
-    setDraft(storedKey);
-  }
-
-  function commit() {
-    const t = draft.trim();
-    const next = t === "" ? null : Number(t);
-    const cur = stored;
-    if (next === cur) return;
-    if (next != null && Number.isNaN(next)) {
-      setDraft(storedKey);
-      return;
-    }
-    onCommit(next);
-  }
+  const hoursInput = useHoursInput(stored, onCommit);
 
   const missing = billable && stored == null;
   const amount = bill ? billAmount(bill, project) : 0;
@@ -311,12 +292,7 @@ function MatrixCell({
         step="0.5"
         inputMode="decimal"
         placeholder={billable ? "—" : ""}
-        value={draft}
-        onChange={(e) => setDraft(e.target.value)}
-        onBlur={commit}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") e.currentTarget.blur();
-        }}
+        {...hoursInput}
       />
       {stored != null && amount > 0 && (
         <div className="cell-foot">

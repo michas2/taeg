@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useStore, useActions } from "../store/store";
+import { useHoursInput } from "../components/useHoursInput";
 import {
   billsForProject,
   billRate,
@@ -203,14 +204,7 @@ function BillRow({
   onHours: (hours: number | null) => void;
   onStatus: (status: BillStatus) => void;
 }) {
-  const [draft, setDraft] = useState(
-    bill.hours == null ? "" : String(bill.hours)
-  );
-
-  function commit() {
-    const trimmed = draft.trim();
-    onHours(trimmed === "" ? null : Number(trimmed));
-  }
+  const hoursInput = useHoursInput(bill.hours, onHours);
 
   const missing = bill.hours == null;
 
@@ -227,10 +221,7 @@ function BillRow({
           min="0"
           step="0.5"
           placeholder="—"
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onBlur={commit}
-          onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
+          {...hoursInput}
         />
       </td>
       <td className="mono">{formatMoney(rate, currency)}</td>
