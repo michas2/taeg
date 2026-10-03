@@ -5,7 +5,6 @@ import type {
   Stage,
   MonthKey,
 } from "../domain/types";
-import { currentMonthKey } from "../utils/helpers";
 
 /**
  * Index of bills for O(1) lookups, avoiding repeated full scans of db.bills.
@@ -74,36 +73,6 @@ export function billsForProject(db: Database, projectId: string): MonthlyBill[] 
 /** True if the project's current stage is flagged billable. */
 export function isProjectBillable(db: Database, project: Project): boolean {
   return db.stages[project.stageId]?.billable ?? false;
-}
-
-export interface MissingEntry {
-  project: Project;
-  month: MonthKey;
-  /** The bill record if one exists but has null hours; undefined if no bill yet. */
-  bill?: MonthlyBill;
-}
-
-/**
- * Billable projects that are missing reported hours for the current month
- * (and optionally the previous month, since numbers can arrive late).
- * Returns entries where no bill exists OR a bill exists with null hours.
- */
-export function missingHours(
-  db: Database,
-  months: MonthKey[] = [currentMonthKey()]
-): MissingEntry[] {
-  const { byProjectMonth } = buildBillIndex(db);
-  const out: MissingEntry[] = [];
-  for (const project of Object.values(db.projects)) {
-    if (!isProjectBillable(db, project)) continue;
-    for (const month of months) {
-      const bill = byProjectMonth.get(`${project.id}:${month}`);
-      if (!bill || bill.hours == null) {
-        out.push({ project, month, bill });
-      }
-    }
-  }
-  return out;
 }
 
 export interface ProjectRevenue {

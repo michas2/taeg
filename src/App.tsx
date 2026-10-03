@@ -8,23 +8,20 @@ import {
   readFileText,
   InvalidBackupError,
 } from "./utils/backup";
+import { SettingsMenu } from "./components/SettingsMenu";
 import { KanbanBoard } from "./views/KanbanBoard";
 import { ProjectBilling } from "./views/ProjectBilling";
-import { MissingHours } from "./views/MissingHours";
-import { Revenue } from "./views/Revenue";
 import { Matrix } from "./views/Matrix";
 import "./App.css";
 
 type View =
-  | { tab: "board" }
+  | { tab: "pipeline" }
   | { tab: "project"; projectId: string }
-  | { tab: "matrix" }
-  | { tab: "missing" }
-  | { tab: "revenue" };
+  | { tab: "timesheet" };
 
 function Shell() {
   const { db, loading, reset, replace } = useStore();
-  const [view, setView] = useState<View>({ tab: "board" });
+  const [view, setView] = useState<View>({ tab: "pipeline" });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // All-time totals for the header, grouped by currency (rates can differ).
@@ -44,7 +41,7 @@ function Shell() {
         )
       ) {
         await replace(restored);
-        setView({ tab: "board" });
+        setView({ tab: "pipeline" });
       }
     } catch (err) {
       const msg =
@@ -105,59 +102,27 @@ function Shell() {
 
         <nav className="tabs">
           <button
-            className={view.tab === "board" ? "tab active" : "tab"}
-            onClick={() => setView({ tab: "board" })}
+            className={view.tab === "pipeline" ? "tab active" : "tab"}
+            onClick={() => setView({ tab: "pipeline" })}
           >
-            Board
+            Pipeline
           </button>
           <button
-            className={view.tab === "matrix" ? "tab active" : "tab"}
-            onClick={() => setView({ tab: "matrix" })}
+            className={view.tab === "timesheet" ? "tab active" : "tab"}
+            onClick={() => setView({ tab: "timesheet" })}
           >
-            Hours matrix
-          </button>
-          <button
-            className={view.tab === "missing" ? "tab active" : "tab"}
-            onClick={() => setView({ tab: "missing" })}
-          >
-            Missing hours
-          </button>
-          <button
-            className={view.tab === "revenue" ? "tab active" : "tab"}
-            onClick={() => setView({ tab: "revenue" })}
-          >
-            Revenue
+            Timesheet
           </button>
         </nav>
-        <div className="header-actions">
-          <button
-            className="ghost"
-            title="Download a JSON backup of all data"
-            onClick={() => exportDatabase(db)}
-          >
-            Export
+
+        <SettingsMenu>
+          <button onClick={() => exportDatabase(db)}>Export backup…</button>
+          <button onClick={() => fileInputRef.current?.click()}>
+            Import backup…
           </button>
+          <div className="settings-sep" />
           <button
-            className="ghost"
-            title="Restore data from a JSON backup"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            Import
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="application/json,.json"
-            style={{ display: "none" }}
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) void handleImportFile(file);
-              // Reset so selecting the same file again re-triggers change.
-              e.target.value = "";
-            }}
-          />
-          <button
-            className="ghost"
+            className="danger"
             onClick={() => {
               if (confirm("Reset all data back to the seed sample?"))
                 void reset();
@@ -165,11 +130,23 @@ function Shell() {
           >
             Reset data
           </button>
-        </div>
+        </SettingsMenu>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="application/json,.json"
+          style={{ display: "none" }}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) void handleImportFile(file);
+            // Reset so selecting the same file again re-triggers change.
+            e.target.value = "";
+          }}
+        />
       </header>
 
       <main className="app-main">
-        {view.tab === "board" && (
+        {view.tab === "pipeline" && (
           <KanbanBoard
             onOpenProject={(projectId) => setView({ tab: "project", projectId })}
           />
@@ -177,21 +154,11 @@ function Shell() {
         {view.tab === "project" && (
           <ProjectBilling
             projectId={view.projectId}
-            onBack={() => setView({ tab: "board" })}
+            onBack={() => setView({ tab: "pipeline" })}
           />
         )}
-        {view.tab === "matrix" && (
+        {view.tab === "timesheet" && (
           <Matrix
-            onOpenProject={(projectId) => setView({ tab: "project", projectId })}
-          />
-        )}
-        {view.tab === "missing" && (
-          <MissingHours
-            onOpenProject={(projectId) => setView({ tab: "project", projectId })}
-          />
-        )}
-        {view.tab === "revenue" && (
-          <Revenue
             onOpenProject={(projectId) => setView({ tab: "project", projectId })}
           />
         )}
