@@ -1,7 +1,14 @@
 import { useMemo, useState } from "react";
 import { useStore, useActions } from "../store/store";
-import { isProjectBillable, billAmount } from "../domain/selectors";
-import type { Database, MonthlyBill, Project, BillStatus } from "../domain/types";
+import {
+  isProjectBillable,
+  billAmount,
+  buildBillIndex,
+  projectTotals as computeProjectTotals,
+  monthTotals as computeMonthTotals,
+  grandTotal as computeGrandTotal,
+} from "../domain/selectors";
+import type { MonthlyBill, Project, BillStatus } from "../domain/types";
 import {
   currentMonthKey,
   addMonths,
@@ -16,15 +23,6 @@ import "./Matrix.css";
 
 interface MatrixProps {
   onOpenProject: (projectId: string) => void;
-}
-
-/** Fast index of bills keyed by `${projectId}:${month}`. */
-function billIndex(db: Database): Map<string, MonthlyBill> {
-  const map = new Map<string, MonthlyBill>();
-  for (const b of Object.values(db.bills)) {
-    map.set(`${b.projectId}:${b.month}`, b);
-  }
-  return map;
 }
 
 /**
@@ -66,63 +64,25 @@ export function Matrix({ onOpenProject }: MatrixProps) {
     return monthRange(addMonths(cur, -(monthsBack - 1)), cur).reverse();
   }, [monthsBack]);
 
-  const index = useMemo(() => billIndex(db), [db]);
+  const index = useMemo(() => buildBillIndex(db), [db]);
 
   // Column (per-project) totals across the shown months: hours + revenue.
-  const projectTotals = useMemo(() => {
-    const totals: Record<string, { hours: number; revenue: number }> = {};
-    for (const p of projects) {
-      let hours = 0;
-      let revenue = 0;
-      for (const m of months) {
-        const bill = index.get(`${p.id}:${m}`);
-        if (bill?.hours != null) {
-          hours += bill.hours;
-          revenue += billAmount(bill, p);
-        }
-      }
-      totals[p.id] = { hours, revenue };
-    }
-    return totals;
-  }, [projects, months, index]);
+  const projectTotals = useMemo(
+    () => computeProjectTotals(projects, months, index),
+    [projects, months, index]
+  );
 
-  // Row (per-month) totals across all shown projects. Revenue is grouped by
-  // currency, since projects may bill in different currencies.
-  const monthTotals = useMemo(() => {
-    const byMonth: Record<
-      string,
-      { hours: number; revenueByCurrency: Record<string, number> }
-    > = {};
-    for (const m of months) {
-      let hours = 0;
-      const revenueByCurrency: Record<string, number> = {};
-      for (const p of projects) {
-        const bill = index.get(`${p.id}:${m}`);
-        if (bill?.hours != null) {
-          hours += bill.hours;
-          revenueByCurrency[p.currency] =
-            (revenueByCurrency[p.currency] ?? 0) + billAmount(bill, p);
-        }
-      }
-      byMonth[m] = { hours, revenueByCurrency };
-    }
-    return byMonth;
-  }, [projects, months, index]);
+  // Row (per-month) totals across all shown projects, grouped by currency.
+  const monthTotals = useMemo(
+    () => computeMonthTotals(projects, months, index),
+    [projects, months, index]
+  );
 
   // Grand total across all shown months and projects.
-  const grandTotal = useMemo(() => {
-    let hours = 0;
-    const revenueByCurrency: Record<string, number> = {};
-    for (const m of months) {
-      const mt = monthTotals[m];
-      if (!mt) continue;
-      hours += mt.hours;
-      for (const [cur, amt] of Object.entries(mt.revenueByCurrency)) {
-        revenueByCurrency[cur] = (revenueByCurrency[cur] ?? 0) + amt;
-      }
-    }
-    return { hours, revenueByCurrency };
-  }, [months, monthTotals]);
+  const grandTotal = useMemo(
+    () => computeGrandTotal(monthTotals),
+    [monthTotals]
+  );
 
   if (projects.length === 0) {
     return (
@@ -222,7 +182,7 @@ export function Matrix({ onOpenProject }: MatrixProps) {
                   <MatrixCell
                     key={p.id}
                     project={p}
-                    bill={index.get(`${p.id}:${month}`)}
+                    bill={index.byProjectMonth.get(`${p.id}:${month}`)}
                     billable={isProjectBillable(db, p)}
                     workDays={businessDays(month)}
                     onCommit={(hours) =>
