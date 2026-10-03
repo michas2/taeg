@@ -88,7 +88,6 @@ export function addProject(
     name: string;
     stageId: string;
     hourlyRate: number;
-    currency: string;
     customer?: string;
     recruiter?: string;
     notes?: string;
@@ -107,7 +106,6 @@ export function addProject(
     recruiter: input.recruiter,
     stageId: input.stageId,
     hourlyRate: input.hourlyRate,
-    currency: input.currency,
     notes: input.notes,
     boardOrder: maxOrder + 1,
   };

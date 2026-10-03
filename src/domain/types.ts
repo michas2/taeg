@@ -51,10 +51,8 @@ export interface Project extends Entity {
   /** The agency/intermediary you send the invoice to (may equal the customer). */
   recruiter?: string;
   stageId: Id;
-  /** Per-project hourly rate. */
+  /** Per-project hourly rate (EUR). */
   hourlyRate: number;
-  /** ISO-4217 currency code, e.g. "EUR". */
-  currency: string;
   notes?: string;
   /** Manual position within a stage column for stable ordering. */
   boardOrder: number;

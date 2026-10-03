@@ -51,7 +51,7 @@ export function ProjectBilling({ projectId, onBack }: ProjectBillingProps) {
   const stage = db.stages[project.stageId];
   const billable = isProjectBillable(db, project);
 
-  // Totals (this project is single-currency).
+  // Totals across this project's bills.
   const totals = bills.reduce(
     (acc, b) => {
       const amt = billAmount(b, project);
@@ -102,7 +102,7 @@ export function ProjectBilling({ projectId, onBack }: ProjectBillingProps) {
                 })
               }
             />
-            <span className="muted">{project.currency}/h</span>
+            <span className="muted">€/h</span>
           </div>
         </div>
       </header>
@@ -110,16 +110,16 @@ export function ProjectBilling({ projectId, onBack }: ProjectBillingProps) {
       <div className="totals">
         <SummaryCard
           label="Billed (reported)"
-          value={formatMoney(totals.billed, project.currency)}
+          value={formatMoney(totals.billed)}
         />
         <SummaryCard
           label="Received"
-          value={formatMoney(totals.received, project.currency)}
+          value={formatMoney(totals.received)}
           tone="green"
         />
         <SummaryCard
           label="Outstanding"
-          value={formatMoney(totals.outstanding, project.currency)}
+          value={formatMoney(totals.outstanding)}
           tone={totals.outstanding > 0 ? "amber" : undefined}
         />
       </div>
@@ -157,7 +157,6 @@ export function ProjectBilling({ projectId, onBack }: ProjectBillingProps) {
               key={bill.id}
               bill={bill}
               rate={billRate(bill, project)}
-              currency={project.currency}
               amount={billAmount(bill, project)}
               overdue={isOverdue(bill)}
               onHours={(h) => actions.setBillHours(projectId, bill.month, h)}
@@ -190,7 +189,6 @@ function SummaryCard({
 function BillRow({
   bill,
   rate,
-  currency,
   amount,
   overdue,
   onHours,
@@ -198,7 +196,6 @@ function BillRow({
 }: {
   bill: MonthlyBill;
   rate: number;
-  currency: string;
   amount: number;
   overdue: boolean;
   onHours: (hours: number | null) => void;
@@ -224,8 +221,8 @@ function BillRow({
           {...hoursInput}
         />
       </td>
-      <td className="mono">{formatMoney(rate, currency)}</td>
-      <td className="mono">{missing ? "—" : formatMoney(amount, currency)}</td>
+      <td className="mono">{formatMoney(rate)}</td>
+      <td className="mono">{missing ? "—" : formatMoney(amount)}</td>
       <td>
         <div className="status-cell">
           <span className={"badge " + statusTone(bill.status, overdue)}>

@@ -82,7 +82,10 @@ export function businessHours(
   return businessDays(month) * hoursPerDay;
 }
 
-export function formatMoney(amount: number, currency: string): string {
+/** The single currency used throughout the app. */
+export const CURRENCY = "EUR";
+
+export function formatMoney(amount: number, currency: string = CURRENCY): string {
   try {
     return new Intl.NumberFormat(undefined, {
       style: "currency",

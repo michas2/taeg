@@ -13,7 +13,6 @@ interface ProjectFormProps {
     recruiter?: string;
     stageId: string;
     hourlyRate: number;
-    currency: string;
     notes?: string;
   }) => void;
 }
@@ -32,7 +31,6 @@ export function ProjectForm({
   const [hourlyRate, setHourlyRate] = useState(
     project ? String(project.hourlyRate) : "100"
   );
-  const [currency, setCurrency] = useState(project?.currency ?? "EUR");
   const [notes, setNotes] = useState(project?.notes ?? "");
 
   const canSave = name.trim().length > 0 && Number(hourlyRate) >= 0;
@@ -45,7 +43,6 @@ export function ProjectForm({
       recruiter: recruiter.trim() || undefined,
       stageId,
       hourlyRate: Number(hourlyRate),
-      currency: currency.trim().toUpperCase() || "EUR",
       notes: notes.trim() || undefined,
     });
     onClose();
@@ -111,27 +108,16 @@ export function ProjectForm({
           ))}
         </select>
       </div>
-      <div className="field-row">
-        <div>
-          <label htmlFor="pf-rate">Hourly rate</label>
-          <input
-            id="pf-rate"
-            type="number"
-            min="0"
-            step="1"
-            value={hourlyRate}
-            onChange={(e) => setHourlyRate(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="pf-currency">Currency</label>
-          <input
-            id="pf-currency"
-            value={currency}
-            maxLength={3}
-            onChange={(e) => setCurrency(e.target.value)}
-          />
-        </div>
+      <div>
+        <label htmlFor="pf-rate">Hourly rate (€/h)</label>
+        <input
+          id="pf-rate"
+          type="number"
+          min="0"
+          step="1"
+          value={hourlyRate}
+          onChange={(e) => setHourlyRate(e.target.value)}
+        />
       </div>
       <div>
         <label htmlFor="pf-notes">Notes</label>

@@ -24,9 +24,9 @@ function Shell() {
   const [view, setView] = useState<View>({ tab: "projects" });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // All-time totals for the header, grouped by currency (rates can differ).
+  // All-time totals for the header (single currency).
   const totals = useMemo(() => revenueTotals(db), [db]);
-  const currencies = Object.keys(totals.byCurrency);
+  const hasRevenue = totals.billed > 0;
 
   async function handleImportFile(file: File) {
     try {
@@ -65,38 +65,32 @@ function Shell() {
           <span className="muted">project &amp; billing manager</span>
         </div>
 
-        {currencies.length > 0 && (
-          <div className="header-revenue" aria-label="Revenue summary">
-            {currencies.map((cur) => {
-              const t = totals.byCurrency[cur];
-              return (
-                <div
-                  key={cur}
-                  className="rev-group"
-                  title={`Billed ${formatMoney(t.billed, cur)} · Received ${formatMoney(
-                    t.received,
-                    cur
-                  )} · Outstanding ${formatMoney(t.outstanding, cur)}`}
+        {hasRevenue && (
+          <div
+            className="header-revenue"
+            aria-label="Revenue summary"
+            title={`Billed ${formatMoney(totals.billed)} · Received ${formatMoney(
+              totals.received
+            )} · Outstanding ${formatMoney(totals.outstanding)}`}
+          >
+            <div className="rev-group">
+              <span className="rev-metric">
+                <span className="rev-label">Received</span>
+                <span className="rev-value green">
+                  {formatMoney(totals.received)}
+                </span>
+              </span>
+              <span className="rev-metric">
+                <span className="rev-label">Outstanding</span>
+                <span
+                  className={
+                    "rev-value" + (totals.outstanding > 0 ? " amber" : "")
+                  }
                 >
-                  <span className="rev-metric">
-                    <span className="rev-label">Received</span>
-                    <span className="rev-value green">
-                      {formatMoney(t.received, cur)}
-                    </span>
-                  </span>
-                  <span className="rev-metric">
-                    <span className="rev-label">Outstanding</span>
-                    <span
-                      className={
-                        "rev-value" + (t.outstanding > 0 ? " amber" : "")
-                      }
-                    >
-                      {formatMoney(t.outstanding, cur)}
-                    </span>
-                  </span>
-                </div>
-              );
-            })}
+                  {formatMoney(totals.outstanding)}
+                </span>
+              </span>
+            </div>
           </div>
         )}
 

@@ -26,19 +26,6 @@ interface MatrixProps {
   onOpenProject: (projectId: string) => void;
 }
 
-/**
- * Format a revenue-by-currency map into one or more amount strings.
- * Returns "—" when there is nothing. Multiple currencies are shown on
- * separate lines (projects may bill in different currencies).
- */
-function formatRevenueByCurrency(
-  byCurrency: Record<string, number>
-): string[] {
-  const entries = Object.entries(byCurrency).filter(([, amt]) => amt !== 0);
-  if (entries.length === 0) return ["—"];
-  return entries.map(([cur, amt]) => formatMoney(amt, cur));
-}
-
 export function Matrix({ onOpenProject }: MatrixProps) {
   const { db } = useStore();
   const actions = useActions();
@@ -73,7 +60,7 @@ export function Matrix({ onOpenProject }: MatrixProps) {
     [projects, months, index]
   );
 
-  // Row (per-month) totals across all shown projects, grouped by currency.
+  // Row (per-month) totals across all shown projects.
   const monthTotals = useMemo(
     () => computeMonthTotals(projects, months, index),
     [projects, months, index]
@@ -162,7 +149,7 @@ export function Matrix({ onOpenProject }: MatrixProps) {
                     {p.name}
                   </button>
                   <div className="muted col-sub">
-                    {formatMoney(p.hourlyRate, p.currency)}/h
+                    {formatMoney(p.hourlyRate)}/h
                   </div>
                 </th>
               ))}
@@ -198,13 +185,9 @@ export function Matrix({ onOpenProject }: MatrixProps) {
                   <div className="total-hours">
                     {monthTotals[month]?.hours || 0} h
                   </div>
-                  {formatRevenueByCurrency(
-                    monthTotals[month]?.revenueByCurrency ?? {}
-                  ).map((line, i) => (
-                    <div className="total-revenue" key={i}>
-                      {line}
-                    </div>
-                  ))}
+                  <div className="total-revenue">
+                    {formatMoney(monthTotals[month]?.revenue || 0)}
+                  </div>
                 </td>
               </tr>
             ))}
@@ -218,19 +201,15 @@ export function Matrix({ onOpenProject }: MatrixProps) {
                     {projectTotals[p.id]?.hours || 0} h
                   </div>
                   <div className="total-revenue">
-                    {formatMoney(projectTotals[p.id]?.revenue || 0, p.currency)}
+                    {formatMoney(projectTotals[p.id]?.revenue || 0)}
                   </div>
                 </td>
               ))}
               <td className="total-cell month-total grand-total mono">
                 <div className="total-hours">{grandTotal.hours || 0} h</div>
-                {formatRevenueByCurrency(grandTotal.revenueByCurrency).map(
-                  (line, i) => (
-                    <div className="total-revenue" key={i}>
-                      {line}
-                    </div>
-                  )
-                )}
+                <div className="total-revenue">
+                  {formatMoney(grandTotal.revenue || 0)}
+                </div>
               </td>
             </tr>
           </tfoot>
@@ -297,7 +276,7 @@ function MatrixCell({
       {stored != null && amount > 0 && (
         <div className="cell-foot">
           <span className="cell-amount muted">
-            {formatMoney(amount, project.currency)}
+            {formatMoney(amount)}
           </span>
           <span
             className={

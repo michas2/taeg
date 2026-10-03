@@ -112,7 +112,7 @@ export function KanbanBoard({ onOpenProject }: KanbanBoardProps) {
                         )}
                       <div className="card-meta">
                         <span>
-                          {formatMoney(project.hourlyRate, project.currency)}/h
+                          {formatMoney(project.hourlyRate)}/h
                         </span>
                         {latest && (
                           <span className="muted">

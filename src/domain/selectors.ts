@@ -83,7 +83,6 @@ export interface ProjectRevenue {
   received: number;
   /** Outstanding = reported but not yet received. */
   outstanding: number;
-  currency: string;
 }
 
 /** Revenue aggregated per project, optionally restricted to a set of months. */
@@ -109,7 +108,6 @@ export function revenueByProject(
         billed,
         received,
         outstanding: billed - received,
-        currency: project.currency,
       };
     })
     .filter((r) => r.billed > 0)
@@ -117,23 +115,20 @@ export function revenueByProject(
 }
 
 export interface RevenueTotals {
-  byCurrency: Record<string, { billed: number; received: number; outstanding: number }>;
+  billed: number;
+  received: number;
+  outstanding: number;
 }
 
-/** Totals across all projects, grouped by currency (rates can differ). */
+/** Totals across all projects (all amounts in the single app currency). */
 export function revenueTotals(db: Database, months?: MonthKey[]): RevenueTotals {
-  const byCurrency: RevenueTotals["byCurrency"] = {};
+  const totals: RevenueTotals = { billed: 0, received: 0, outstanding: 0 };
   for (const r of revenueByProject(db, months)) {
-    const bucket = (byCurrency[r.currency] ??= {
-      billed: 0,
-      received: 0,
-      outstanding: 0,
-    });
-    bucket.billed += r.billed;
-    bucket.received += r.received;
-    bucket.outstanding += r.outstanding;
+    totals.billed += r.billed;
+    totals.received += r.received;
+    totals.outstanding += r.outstanding;
   }
-  return { byCurrency };
+  return totals;
 }
 
 
@@ -146,7 +141,7 @@ export interface HoursRevenue {
 
 /**
  * Per-project totals (hours + revenue) across a set of months. Keyed by
- * project id. Each project is single-currency, so revenue is a plain number.
+ * project id. Revenue is a plain number (single app currency).
  */
 export function projectTotals(
   projects: Project[],
@@ -169,44 +164,37 @@ export function projectTotals(
   return totals;
 }
 
-export interface MonthTotal {
-  hours: number;
-  /** Revenue grouped by currency (projects may bill in different ones). */
-  revenueByCurrency: Record<string, number>;
-}
-
-/** Per-month totals (hours + revenue by currency) across the given projects. */
+/** Per-month totals (hours + revenue) across the given projects. */
 export function monthTotals(
   projects: Project[],
   months: MonthKey[],
   index: BillIndex
-): Record<string, MonthTotal> {
-  const byMonth: Record<string, MonthTotal> = {};
+): Record<string, HoursRevenue> {
+  const byMonth: Record<string, HoursRevenue> = {};
   for (const m of months) {
     let hours = 0;
-    const revenueByCurrency: Record<string, number> = {};
+    let revenue = 0;
     for (const p of projects) {
       const bill = index.byProjectMonth.get(`${p.id}:${m}`);
       if (bill?.hours != null) {
         hours += bill.hours;
-        revenueByCurrency[p.currency] =
-          (revenueByCurrency[p.currency] ?? 0) + billAmount(bill, p);
+        revenue += billAmount(bill, p);
       }
     }
-    byMonth[m] = { hours, revenueByCurrency };
+    byMonth[m] = { hours, revenue };
   }
   return byMonth;
 }
 
-/** Grand total (hours + revenue by currency) across all given month totals. */
-export function grandTotal(byMonth: Record<string, MonthTotal>): MonthTotal {
+/** Grand total (hours + revenue) across all given month totals. */
+export function grandTotal(
+  byMonth: Record<string, HoursRevenue>
+): HoursRevenue {
   let hours = 0;
-  const revenueByCurrency: Record<string, number> = {};
+  let revenue = 0;
   for (const mt of Object.values(byMonth)) {
     hours += mt.hours;
-    for (const [cur, amt] of Object.entries(mt.revenueByCurrency)) {
-      revenueByCurrency[cur] = (revenueByCurrency[cur] ?? 0) + amt;
-    }
+    revenue += mt.revenue;
   }
-  return { hours, revenueByCurrency };
+  return { hours, revenue };
 }

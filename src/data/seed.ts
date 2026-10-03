@@ -52,7 +52,6 @@ export function createSeedDatabase(): Database {
     recruiter: "TechStaff Agency",
     stageId: stageByName("Active").id,
     hourlyRate: 95,
-    currency: "EUR",
     notes: "Backend modernization engagement.",
     boardOrder: 0,
   }) as Project;
@@ -64,7 +63,6 @@ export function createSeedDatabase(): Database {
     recruiter: "Globex",
     stageId: stageByName("Talked to customer").id,
     hourlyRate: 110,
-    currency: "EUR",
     boardOrder: 0,
   }) as Project;
   projects[globex.id] = globex;
