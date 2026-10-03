@@ -9,6 +9,7 @@ import {
 } from "react";
 import type { ReactNode } from "react";
 import type { Database } from "../domain/types";
+import { SCHEMA_VERSION } from "../domain/types";
 import { repository } from "../data";
 import { createSeedDatabase } from "../data/seed";
 import * as actions from "../domain/actions";
@@ -96,7 +97,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 }
 
 const EMPTY_DB: Database = {
-  schemaVersion: 1,
+  schemaVersion: SCHEMA_VERSION,
   stages: {},
   projects: {},
   bills: {},
