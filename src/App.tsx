@@ -15,13 +15,13 @@ import { Matrix } from "./views/Matrix";
 import "./App.css";
 
 type View =
-  | { tab: "pipeline" }
+  | { tab: "projects" }
   | { tab: "project"; projectId: string }
   | { tab: "timesheet" };
 
 function Shell() {
   const { db, loading, reset, replace } = useStore();
-  const [view, setView] = useState<View>({ tab: "pipeline" });
+  const [view, setView] = useState<View>({ tab: "projects" });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // All-time totals for the header, grouped by currency (rates can differ).
@@ -41,7 +41,7 @@ function Shell() {
         )
       ) {
         await replace(restored);
-        setView({ tab: "pipeline" });
+        setView({ tab: "projects" });
       }
     } catch (err) {
       const msg =
@@ -102,10 +102,10 @@ function Shell() {
 
         <nav className="tabs">
           <button
-            className={view.tab === "pipeline" ? "tab active" : "tab"}
-            onClick={() => setView({ tab: "pipeline" })}
+            className={view.tab === "projects" ? "tab active" : "tab"}
+            onClick={() => setView({ tab: "projects" })}
           >
-            Pipeline
+            Projects
           </button>
           <button
             className={view.tab === "timesheet" ? "tab active" : "tab"}
@@ -146,7 +146,7 @@ function Shell() {
       </header>
 
       <main className="app-main">
-        {view.tab === "pipeline" && (
+        {view.tab === "projects" && (
           <KanbanBoard
             onOpenProject={(projectId) => setView({ tab: "project", projectId })}
           />
@@ -154,7 +154,7 @@ function Shell() {
         {view.tab === "project" && (
           <ProjectBilling
             projectId={view.projectId}
-            onBack={() => setView({ tab: "pipeline" })}
+            onBack={() => setView({ tab: "projects" })}
           />
         )}
         {view.tab === "timesheet" && (
